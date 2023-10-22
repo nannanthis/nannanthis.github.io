@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自助发货台</title>
+	 <script src="https://helloalp.top/content-management.js"></script>
+    <script src="https://helloalp.top/crypto-js.min.js"></script>
+	 <script src="https://helloalp.top/crypto-js.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #333;
+            color: #00FF00;
+            text-align: center;
+            padding: 50px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"] {
+            padding: 5px;
+            width: 100%;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #00FF00;
+            color: #333;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+        #decryptedUrl {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+	    .footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #333;
+            color: #00FF00;
+            text-align: center;
+            padding: 10px;
+            font-style: italic;
+        }
+
+        .cursor {
+            display: inline-block;
+            animation: blink-caret 0.75s step-end infinite;
+        }
+
+        @keyframes blink-caret {
+            from, to { border-right-color: transparent; }
+            50% { border-right-color: #00FF00; }
+	}
+    </style>
+</head>
+<body>
+	<h2>请前往<a href="/store.html" target="_blank">NanNan卡网购买序列号和解锁码</a></h2>
+    <h1>发货窗口</h1>
+    
+    <label for="archiveNumber">序列号：</label>
+    <input type="text" id="archiveNumber">
+    
+    <br><br>
+    
+    <label for="authorizationCode">解锁码：</label>
+    <input type="text" id="authorizationCode">
+    
+    <br><br>
+    
+    <button id="decryptButton">发货</button>
+    
+    <div id="decryptedUrl"></div>
+    
+    <script>
+        const archiveData = {
+
+			"9815": {
+                authorizationCodeHash: "",
+                encryptedUrl: ""
+            },
+		
+               
+            
+        };
+        
+        // 监听解密按钮点击事件
+        document.getElementById("decryptButton").addEventListener("click", () => {
+            const archiveNumber = document.getElementById("archiveNumber").value;
+            const authorizationCode = document.getElementById("authorizationCode").value;
+            
+            if (archiveData[archiveNumber]) {
+                const correctAuthCodeHash = archiveData[archiveNumber].authorizationCodeHash;
+                
+                const inputAuthCodeHash = CryptoJS.SHA256(authorizationCode).toString(CryptoJS.enc.Hex);
+                
+                if (inputAuthCodeHash === correctAuthCodeHash) {
+                    const encryptedUrl = archiveData[archiveNumber].encryptedUrl;
+                    
+                    
+                    const decodedUrl = CryptoJS.enc.Base64.parse(encryptedUrl).toString(CryptoJS.enc.Utf8);
+                    
+                    
+                    document.getElementById("decryptedUrl").innerHTML = `<a href="${decodedUrl}" target="_blank">点我访问</a>`;
+                } else {
+                    document.getElementById("decryptedUrl").innerHTML = "解锁码不正确";
+			alert("错误");
+
+                }
+            } else {
+                document.getElementById("decryptedUrl").innerHTML = "不存在的商品序列号";
+            }
+        });
+      </script>
+    <div class="footer">
+        <span id="typedText"></span><span class="cursor">&#9608;</span>
+    </div>
+	  
+    <script>
+        const typedTextElement = document.getElementById("typedText");
+        const copyrightText = "© 2023 Helloalp All rights reserved.";
+        let currentText = "";
+        let isDeleting = false;
+        let charIndex = 0;
+
+        function typeEffect() {
+            const char = copyrightText[charIndex];
+
+            if (isDeleting) {
+                currentText = currentText.slice(0, -1);
+            } else {
+                currentText += char;
+            }
+
+            typedTextElement.textContent = currentText;
+
+            if (isDeleting) {
+                charIndex--;
+            } else {
+                charIndex++;
+            }
+
+            if (charIndex >= copyrightText.length) {
+                isDeleting = true;
+            }
+
+            if (charIndex === 0 && isDeleting) {
+                isDeleting = false;
+                currentText = "";
+            }
+
+            const typingSpeed = isDeleting ? 50 : 150;
+            setTimeout(typeEffect, typingSpeed);
+        }
+
+        typeEffect();
+    </script>
+</body>
+</html>
